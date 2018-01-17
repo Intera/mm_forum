@@ -422,7 +422,7 @@ class tx_mmforum_pi4 extends tx_mmforum_base {
 				'search_string' => $searchstring,
 				'array_string'  => serialize($post_id_array),
 				'search_place'  => $param['search_place'],
-				'solved'        => $param['solved'],
+				'solved'        => (int)$param['solved'],
 				'search_order'  => $param['search_order'],
 				'groupPost'     => $param['groupPost'],
 				'user_groups'	=> implode(',',$userGroups),

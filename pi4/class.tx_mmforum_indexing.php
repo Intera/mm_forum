@@ -322,7 +322,7 @@ class tx_mmforum_indexing {
 			'post_crdate'		=> $matchparams['post_crdate'],
 			'post_cruser'		=> $matchparams['post_cruser'],
 			'reqUserGroups_f'	=> $matchparams['reqUserGroups_f'],
-            'reqUserGroups_c'   => $matchparams['reqUserGroups_c'],
+            'reqUserGroups_c'   => (string)$matchparams['reqUserGroups_c'],
 			'crdate'            => time(),
 			'tstamp'			=> time()
 		);

@@ -6153,6 +6153,12 @@ class tx_mmforum_pi1 extends tx_mmforum_base {
 			'button_atagparams' => $atagparams
 		);
 		if ($data['button_link']{0} === '?') $data['button_link'] = '/' . $data['button_link'];
+
+		// Workaround to prevent the absRefPrefix to be prepended twice to the URL, see #26143
+		if (!empty($GLOBALS['TSFE']->absRefPrefix)) {
+			$data['button_link'] = substr($data['button_link'], strlen($GLOBALS['TSFE']->absRefPrefix));
+		}
+
 		$oldData = $this->cObj->data;
 		$this->cObj->data = $data;
 

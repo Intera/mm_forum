@@ -153,7 +153,7 @@ class tx_mmforum_pi4 extends tx_mmforum_base {
                     'tx_mmforum_forums',
                     'forum_internal = 1'
                 );
-                while ($row    = mysql_fetch_assoc($res)) {
+                while ($row    = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
                     array_push($intern_forums,$row[uid]);
                 }
 

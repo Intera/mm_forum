@@ -473,6 +473,13 @@ class tx_mmforum_pi3 extends tx_mmforum_base {
 			$marker['###BACKLINK###'] = '<a href="javascript:history.back()">' . $this->pi_getLL('back') . '</a>';
 		}
 
+		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['mm_forum']['pm']['message_read_additionalMarkers'])) {
+			foreach($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['mm_forum']['pm']['message_read_additionalMarkers'] as $_classRef) {
+				$_procObj = & t3lib_div::getUserObj($_classRef);
+				$marker = $_procObj->message_read_additionalMarkers($marker, $res, $content, $conf, $this);
+			}
+		}
+
 		$content .= $this->cObj->substituteMarkerArrayCached($template, $marker);
 		return $content;
 	}

@@ -567,7 +567,7 @@ class tx_mmforum_pi3 extends tx_mmforum_base {
 				$template = $this->cObj->fileResource($conf['template.']['error_message']);
 				$marker['###ERROR###'] = $errormessage;
 				$marker['###BACKLINK###'] = '<a href="javascript:history.back()">' . $this->pi_getLL('back') . '</a>';
-			
+
 			} else {
 
 				// Retrieve userId from username
@@ -668,7 +668,7 @@ class tx_mmforum_pi3 extends tx_mmforum_base {
 
 						$link = $this->pi_getPageLink($this->conf['pm_id'], '', $linkParams);
 						$link = $this->tools->getAbsoluteUrl($link);
-						
+
 						tx_mmforum_tools::storeCacheVar('pm.urlCache.' . $mess_id, $link);
 					}
 
@@ -685,7 +685,7 @@ class tx_mmforum_pi3 extends tx_mmforum_base {
 					$marker['###BACKLINK###'] = '<a href="javascript:history.back()">' . $this->pi_getLL('back') . '</a>';
 				}
 			}
-		
+
 		// Display message form
 		} else {
 			$content = $this->top_navi($content, $conf);
@@ -813,7 +813,9 @@ class tx_mmforum_pi3 extends tx_mmforum_base {
 		$template = $this->cObj->getSubpart($template, "###USERLIST_BEGIN###");
 
 		$marker = array(
-			// Empty
+			'###LABEL_USER_LIST_PLEASE_CHOOSE###' => $this->pi_getLL('user-list-please-choose'),
+			'###LABEL_FIELD_username###' => $this->pi_getLL('user-list-field-username'),
+			'###TOP_NAVI###' => $this->top_navi('', $conf)
 		);
 
 			// Include hooks
@@ -828,9 +830,30 @@ class tx_mmforum_pi3 extends tx_mmforum_base {
 
 		$usersearch = $GLOBALS['TYPO3_DB']->quoteStr($this->piVars['user'],'fe_users');
 
-		$where = 'disable = 0 AND deleted = 0 AND username LIKE \'%'.$usersearch.'%\' AND pid='.$this->conf['userPID'].'';
-		$orderBy = 'username ASC';
+		$searchqueryparts = array();
+		$searchfields = t3lib_div::trimExplode(',', $conf['userSearchFields']);
+		$searchquery = '';
+
+		foreach ($searchfields as $field) {
+			$searchqueryparts[] = $field . ' LIKE \'%' . $usersearch . '%\'';
+		}
+
+		if (count($searchqueryparts)) {
+			$searchquery = ' AND (' . implode(' OR ', $searchqueryparts) . ')';
+		}
+
+		$where = 'disable = 0 AND deleted = 0' . $searchquery . ' AND pid=' . $this->conf['userPID'];
+		$orderBy = $conf['userSearchOrderBy'];
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*','fe_users',$where,$groupBy='',$orderBy,'100');
+
+		if (!$GLOBALS['TYPO3_DB']->sql_num_rows($res)) {
+			$template = $this->cObj->fileResource($conf['template.']['user_list']);
+			$template = $this->cObj->getSubpart($template, "###USERLIST_NO_RESULTS###");
+			$userMarker = array(
+				'###LABEL_USERLIST_NO_RESULTS###' => $this->pi_getLL('user-list-no-results'),
+			);
+			$content .= $this->cObj->substituteMarkerArrayCached($template, $userMarker);
+		}
 
 		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
 			$template = $this->cObj->fileResource($conf['template.']['user_list']);
@@ -892,7 +915,7 @@ class tx_mmforum_pi3 extends tx_mmforum_base {
 				'tx_mmforum_pminbox',
 				'hidden=0 AND deleted=0 AND read_flg=0 AND mess_type=0 AND to_uid=' . $uid . $this->getStoragePIDQuery()
 		);
-		
+
 		$row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
 		return $row['msg_count'];
 	}

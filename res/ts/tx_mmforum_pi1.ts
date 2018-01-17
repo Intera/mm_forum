@@ -150,6 +150,9 @@ plugin.tx_mmforum_pi1 {
                 
             # Maximum attachment count
             	maxCount = {$plugin.tx_mmforum.attachment_count}a
+
+            # Filemode for new attachments
+            	filemode = {$plugin.tx_mmforum.attachment_filemode}
         }
         
     # Fields to be displayed in user list

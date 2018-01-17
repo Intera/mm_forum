@@ -3000,7 +3000,7 @@ class tx_mmforum_pi1 extends tx_mmforum_base {
 			$newpath .= '.' . $ext;
 
 			move_uploaded_file($file['tmp_name'], $newpath);
-			chmod($newpath, 0444);
+			chmod($newpath, octdec($this->conf['attachments.']['filemode']));
 
 				/* Fix wrong mime-type for pdf when uploading through Firefox
 				 * Mime-type for PDF should be: 'application/pdf'

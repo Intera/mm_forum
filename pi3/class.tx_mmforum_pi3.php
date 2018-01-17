@@ -628,7 +628,7 @@ class tx_mmforum_pi3 extends tx_mmforum_base {
 					unset($_SESSION['mm_forum']['pm']['message']);
 
 					// Notification to the recipient via email
-					if($recipient['tx_mmforum_pmnotifymode'] == 0 && t3lib_div::validEmail($recipient['email'])) {
+					if (!empty($this->conf['enablePmNotifications']) && $recipient['tx_mmforum_pmnotifymode'] == 0 && t3lib_div::validEmail($recipient['email'])) {
 
 						$template = $this->pi_getLL('ntfmail.content');
 
@@ -667,7 +667,7 @@ class tx_mmforum_pi3 extends tx_mmforum_base {
 						);
 						$GLOBALS['TYPO3_DB']->exec_UPDATEquery('tx_mmforum_pminbox', 'uid=' . $mess_id, $updateArray);
 
-					} else if($recipient['tx_mmforum_pmnotifymode'] == 1) {
+					} elseif (!empty($this->conf['enablePmNotifications']) && $recipient['tx_mmforum_pmnotifymode'] == 1) {
 
 						$linkParams[$this->prefixId] = array(
 							'action' => 'message_read',

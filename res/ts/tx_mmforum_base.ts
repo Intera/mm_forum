@@ -10,6 +10,9 @@ plugin.tx_mmforum {
 		
 		# User storage PID
 	userPID 			= {$plugin.tx_mmforum.userPID}
+
+		# Search user storage PIDs recursive
+	userPIDRecursive 	= {$plugin.tx_mmforum.userPIDRecursive}
 		
 		
 		

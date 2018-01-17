@@ -352,13 +352,17 @@ class tx_mmforum_install {
 					} else $options = $this->$config['type.']['handler']($this->conf[$field], $field, $config);
 					$input = $this->getLSelectField($field,$this->conf[$field],$options);
 				} elseif($config['type.']['table']) {
-						if($config['type.']['table'] == 'fe_groups') $pid = $this->conf['userPID'];
-					elseif($config['type.']['table'] == 'fe_users')  $pid = $this->conf['userPID'];
-					else                                             $pid = $this->conf['storagePID'];
+					$recursive = 0;
+					if (($config['type.']['table'] == 'fe_groups') || ($config['type.']['table'] == 'fe_users')) {
+						$pid = $this->conf['userPID'];
+						$recursive = (integer)$this->conf['userPIDRecursive'];
+					} else {
+						$pid = $this->conf['storagePID'];
+					}
 
 					$limit = $config['type.']['limit']?$config['type.']['limit']:100;
 					$bigField = ($limit>1);
-					$input = $this->getSelectField($field,$this->conf[$field],$config['type.']['table'],$pid,$limit);
+					$input = $this->getSelectField($field, $this->conf[$field], $config['type.']['table'], $pid, $limit, $recursive);
 				} elseif($config['type.']['options.']) {
 					$options = array();
 					foreach($config['type.']['options.'] as $k => $v)
@@ -504,7 +508,7 @@ class tx_mmforum_install {
 		 *
 		 */
 
-	function getSelectField($fieldname,$value,$table,$pid,$limit) {
+	function getSelectField($fieldname, $value, $table, $pid, $limit, $recursive = 0) {
 		$size = ($limit<=5 && $limit > 0)?$limit:5;
 
         switch($table) {
@@ -522,11 +526,12 @@ class tx_mmforum_install {
 				'config' => array(
 					'type' => 'select',
 					'foreign_table' => $table,
-					'foreign_table_where' => 'AND '.$table.'.hidden=0 AND '.$table.'.pid='.$pid.'',
+					'foreign_table_where' => 'AND ' . $table . '.hidden=0' . tx_mmforum_betools::getPIDQuery($pid, $recursive, $table),
 					'size' => $size,
 					#'autoSizeMax' => 10,
 					'minitems' => 0,
-					'maxitems' => $limit
+					'maxitems' => $limit,
+					'noIconsBelowSelect' => 1,
 				)
 			)
 		);
@@ -645,7 +650,30 @@ class tx_mmforum_install {
 		return $result;
 	}
 
+	/**
+	 * Gets the options for the "recursive" select
+	 *
+	 * @see typo3/sysext/cms/tbl_tt_content.php (Configuration for "recursive" field)
+	 * @author Alexander Stehlik <astehlik@intera.de>
+	 *
+	 * @param string $value n/a
+	 * @param string $fieldname n/a
+	 * @param array $config n/a
+	 * @return array The options for "recursive" select as an associative array
+	 */
+	function getRecusiveOptions($value, $fieldname, $config) {
 
+		$options = array(
+			'0' => '',
+			'1' => $GLOBALS['LANG']->sL('LLL:EXT:cms/locallang_ttc.php:recursive.I.1'),
+			'2' => $GLOBALS['LANG']->sL('LLL:EXT:cms/locallang_ttc.php:recursive.I.2'),
+			'3' => $GLOBALS['LANG']->sL('LLL:EXT:cms/locallang_ttc.php:recursive.I.3'),
+			'4' => $GLOBALS['LANG']->sL('LLL:EXT:cms/locallang_ttc.php:recursive.I.4'),
+			'250' => $GLOBALS['LANG']->sL('LLL:EXT:cms/locallang_ttc.php:recursive.I.5'),
+		);
+
+		return $options;
+	}
 
 		/**
 		 *
@@ -665,18 +693,37 @@ class tx_mmforum_install {
 		 */
 
 	function getGroupField($table,$value,$fieldname,$add_button=false,$add_pid=0) {
+		$maxitems = 1;
+		$size = 1;
+
+		$fieldconfig = $this->fieldConfig[$this->instVars['ctg'] . '.']['items.'][$fieldname . '.']['type.'];
+		if (intval($fieldconfig['maxitems'])) {
+			$maxitems = intval($fieldconfig['maxitems']);
+		}
+		if (intval($fieldconfig['size'])) {
+			$size = intval($fieldconfig['size']);
+		}
+
+		if ($value) {
+			$values = t3lib_div::trimExplode(',', t3lib_div::rm_endcomma($value), 1);
+			foreach ($values as &$val) {
+				$val = $table . '_' . $val;
+			}
+			$value = implode(',', $values);
+		}
+
 		$conf = array(
 			'itemFormElName' => 'tx_mmforum_install[conf][0]['.$fieldname.']',
-			'itemFormElValue' => $value?$table.'_'.$value:'',
+			'itemFormElValue' => $value,
 			'fieldConf' => array(
 				'config' => array(
 					"type" => "group",
 					"internal_type" => "db",
 					"allowed" => $table,
 					"prepend_tname" => FALSE,
-					"size" => 1,
+					"size" => $size,
 					"minitems" => 0,
-					"maxitems" => 1,
+					"maxitems" => $maxitems,
 					'wizards' => $add_button?array(
 						'_PADDING' => 0,
 						'_VERTICAL' => 1,
@@ -923,8 +970,10 @@ class tx_mmforum_install {
 			$config = $ctg=='required' ? $this->getFieldConfigByIdentifier($var) : $this->fieldConfig["$ctg."]['items.']["$var."];
 			$type = $config['type'];
 
-			if($type == 'group' || $type == 'select')
-				$value = preg_replace('/^'.$config['type.']['table'].'_/','',preg_replace('/,$/','',$value));
+			if ($type == 'group' || $type == 'select') {
+				$value = t3lib_div::rm_endcomma($value);
+				$value = preg_replace('/' . $config['type.']['table'] . '_/', '', $value);
+			}
             if($type == 'int') $value = intval($value);
             if($type == 'md5') {
                 if(strlen(trim($value))==0) continue;

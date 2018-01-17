@@ -571,10 +571,11 @@ class tx_mmforum_pi3 extends tx_mmforum_base {
 			} else {
 
 				// Retrieve userId from username
+				$pidquery = tx_mmforum_tools::getUserGroupPIDQuery($this->conf, 'fe_users');
 				$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
 						'uid,email,tx_mmforum_pmnotifymode,' . tx_mmforum_pi1::getUserNameField(),
 						'fe_users',
-						'deleted=0 AND disable=0 AND username=' . $GLOBALS['TYPO3_DB']->fullQuoteStr($to_username, 'fe_users') . ' AND pid=' . $this->conf['userPID']
+						'deleted=0 AND disable=0 AND username=' . $GLOBALS['TYPO3_DB']->fullQuoteStr($to_username, 'fe_users') . $pidquery
 				);
 				$recipient = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
 				$GLOBALS['TYPO3_DB']->sql_free_result($res);
@@ -714,6 +715,7 @@ class tx_mmforum_pi3 extends tx_mmforum_base {
 
 			session_start();
 			$_SESSION[$this->prefixId]['userPID'] = $this->conf['userPID'];
+			$_SESSION[$this->prefixId]['userPIDRecursive'] = $this->conf['userPIDRecursive'];
 			$_SESSION[$this->prefixId]['userGID'] = $this->conf['userGroup'];
 			$_SESSION[$this->prefixId]['usernameField'] = 'username'; //tx_mmforum_pi1::getUserNameField();
 
@@ -842,7 +844,7 @@ class tx_mmforum_pi3 extends tx_mmforum_base {
 			$searchquery = ' AND (' . implode(' OR ', $searchqueryparts) . ')';
 		}
 
-		$where = 'disable = 0 AND deleted = 0' . $searchquery . ' AND pid=' . $this->conf['userPID'];
+		$where = 'disable = 0 AND deleted = 0' . $searchquery . tx_mmforum_tools::getUserGroupPIDQuery($this->conf, 'fe_users');
 		$orderBy = $conf['userSearchOrderBy'];
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*','fe_users',$where,$groupBy='',$orderBy,'100');
 

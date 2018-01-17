@@ -290,7 +290,7 @@ class tx_mmforum_pi2 extends tx_mmforum_base {
 		}
 
 		$insertArray = array(
-			'pid'				    => $pid,
+			'pid'				    => tx_mmforum_tools::getUserGroupPIDQuery($this->conf, 'fe_users', TRUE, TRUE),
 			'tstamp'			    => time(),
 			'crdate'			    => time(),
 			'username'			    => $this->data['username'],
@@ -604,7 +604,7 @@ class tx_mmforum_pi2 extends tx_mmforum_base {
 			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
 				'*',
 				'fe_users',
-				'username LIKE "'.$this->data['username'].'" AND deleted=0 AND pid='.$this->conf['userPID']
+				'username LIKE "'.$this->data['username'].'" AND deleted=0' . tx_mmforum_tools::getUserGroupPIDQuery($this->conf, 'fe_users')
 			);
 			if ($GLOBALS['TYPO3_DB']->sql_num_rows($res)) {
 				$marker["###ERROR_username###"] = $this->cObj->wrap($this->pi_getLL('error.usernameExists'), $this->conf['errorwrap']);

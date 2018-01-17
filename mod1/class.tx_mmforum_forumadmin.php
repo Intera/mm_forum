@@ -945,7 +945,7 @@ class tx_mmforum_forumAdmin {
 				'config'				=> array(
 					"type" => "select",
 					"foreign_table" => "fe_groups",
-					"foreign_table_where" => 'AND fe_groups.pid="'.$this->conf['userPID'].'"',
+					"foreign_table_where" => tx_mmforum_BeTools::getPIDQuery($this->conf['userPID'], $this->conf['userPIDRecursive'], 'fe_groups'),
 					"size" => 4,
 					"minitems" => 0,
 					"maxitems" => 100,

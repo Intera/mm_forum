@@ -379,8 +379,9 @@ class  tx_mmforum_module1 extends t3lib_SCbase {
             #$userGroup_query = "(".$this->confArr['userGroup']." IN (usergroup) OR ".$this->confArr['modGroup']." IN (usergroup) OR ".$this->confArr['adminGroup']." IN (usergroup))";
             $userGroup_query = "(FIND_IN_SET('".$this->confArr['userGroup']."',usergroup) OR FIND_IN_SET('".$this->confArr['modGroup']."',usergroup) OR FIND_IN_SET('".$this->confArr['adminGroup']."',usergroup))";
             #$userGroup_query = "1";
-            $res	= $GLOBALS['TYPO3_DB']->exec_SELECTquery('count(*)','fe_users',"$filter and pid='".$this->confArr['userPID']."' and ".$userGroup_query." and deleted=0");
-			$row	= $GLOBALS['TYPO3_DB']->sql_fetch_row($res);
+            $pid_query = tx_mmforum_BeTools::getPIDQuery($this->confArr['userPID'], $this->confArr['userPIDRecursive'], 'fe_users');
+            $res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('count(*)', 'fe_users', $filter . $pid_query . ' and ' . $userGroup_query . ' and deleted=0');
+            $row = $GLOBALS['TYPO3_DB']->sql_fetch_row($res);
 			$records= $row[0];
 			$pages	= ceil($records/$this->confArr['recordsPerPage']);
 			$offset	= intval($mmforum['offset']);
@@ -413,7 +414,7 @@ class  tx_mmforum_module1 extends t3lib_SCbase {
 
 		// Display userdata table
 			// Execute database query
-			$res=$GLOBALS['TYPO3_DB']->exec_SELECTquery('*','fe_users',"$filter and pid='".$this->confArr['userPID']."' and deleted=0 AND ".$userGroup_query,'',$order,($offset*$this->confArr['recordsPerPage']).",".$this->confArr['recordsPerPage']);
+			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'fe_users', $filter . $pid_query . " and deleted=0 AND " . $userGroup_query, '', $order, ($offset * $this->confArr['recordsPerPage']) . "," . $this->confArr['recordsPerPage']);
 			if($res) {
 
 				$marker = array(
@@ -1034,6 +1035,7 @@ class  tx_mmforum_module1 extends t3lib_SCbase {
 
         $this->confArr['templatePath']      = $this->config['plugin.']['tx_mmforum.']['path_template'];
         $this->confArr['userPID']           = $this->config['plugin.']['tx_mmforum.']['userPID'];
+        $this->confArr['userPIDRecursive']  = $this->config['plugin.']['tx_mmforum.']['userPIDRecursive'];
         $this->confArr['forumPID']          = $this->config['plugin.']['tx_mmforum.']['storagePID'];
         $this->confArr['userGroup']         = $this->config['plugin.']['tx_mmforum.']['userGroup'];
         $this->confArr['modGroup']          = $this->config['plugin.']['tx_mmforum.']['moderatorGroup'];

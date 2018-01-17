@@ -21,6 +21,9 @@
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  */
+
+use TYPO3\CMS\Core\Utility\MathUtility;
+
 /**
  * [CLASS/FUNCTION INDEX of SCRIPT]
  *
@@ -639,7 +642,75 @@ class tx_mmforum_tools extends tslib_pibase {
 		return str_replace(array_keys($replace), array_values($replace), $url);
 	}
 
+	/**
+	 *
+	 * Returns a mysql query in the form AND ( tablename.pid=X OR tablename.pid=Y ... )
+	 *
+	 * @author Alexander Stehlik <astehlik@intera.de>
+	 * @version 2011-06-15
+	 * @param array $conf configuration array containing the properties userPID and userPIDRecursive
+	 * @param string $table table name, that should be prepended to the pid field
+	 * @param boolean $firstOnly if true, only the first element in the userPID list will be returned (useful for new records)
+	 * @param boolean $returnAsList if true, no query will be returned, but a comma seperated list of the PIDs
+	 * @return string sql query string for selecting page IDs
+	 */
+	static function getUserGroupPIDQuery($conf, $table, $firstOnly = FALSE, $returnAsList = FALSE) {
+		return self::getPIDQuery($conf['userPID'], $conf['userPIDRecursive'], $table, $firstOnly, $returnAsList);
+	}
 
+	/**
+	 *
+	 * Returns a mysql query in the form AND ( tablename.pid=X OR tablename.pid=Y ... )
+	 *
+	 * @author Alexander Stehlik <astehlik@intera.de>
+	 * @version 2011-06-15
+	 * @see typo3/sysext/cms/tslib/class.tslib_pibase.php (pi_getPidList function)
+	 * @param string $pidList comma seperated list of PIDs that will be used to create the quers
+	 * @param int $recursive Level of recursion when looking for child PIDs
+	 * @param string $table table name, that should be prepended to the pid field
+	 * @param boolean $firstOnly if true, only the first element in the userPID list will be returned (useful for new records)
+	 * @param boolean $returnAsList if true, no query will be returned, but a comma seperated list of the PIDs
+	 * @return string sql query string for selecting page IDs or comma sperated list of all PIDs
+	 */
+	static function getPIDQuery($pidList, $recursive, $table, $firstOnly = FALSE, $returnAsList = FALSE) {
+		$recursive = MathUtility::forceIntegerInRange($recursive, 0);
+
+		$userPidArray = array_unique(t3lib_div::trimExplode(',', $pidList, 1));
+
+		if (sizeof($userPidArray) == 0) {
+			die('mm_forum was not properly configured. No user storage pid was set. Please user the mm_forum Administration to set a user and group storage page.');
+		} elseif (($firstOnly) || ((sizeof($userPidArray) == 1) && ($recursive == 0))) {
+			$finalUserPidArray = array(MathUtility::forceIntegerInRange($userPidArray[0], 0));
+		} else {
+
+			$finalUserPidArray = array();
+			$queryGenerator = t3lib_div::makeInstance('t3lib_queryGenerator');
+
+			foreach ($userPidArray as $userPid) {
+
+				$userPid = MathUtility::forceIntegerInRange($userPid, 0);
+
+				if ($userPid) {
+					$childPidList = $queryGenerator->getTreeList($userPid, $recursive, 0, 1);
+					if ($childPidList) {
+						$finalUserPidArray = array_merge($finalUserPidArray, explode(',', $childPidList));
+					}
+				}
+			}
+
+			$finalUserPidArray = array_unique($finalUserPidArray, SORT_NUMERIC);
+		}
+
+		if ($returnAsList) {
+			$returnValue = implode(',', $finalUserPidArray);
+		} else {
+			$glue = ' OR ' . $table . '.pid=';
+			$pidquery = implode($glue, $finalUserPidArray);
+			$returnValue = ' AND ( ' . $table . '.pid=' . $pidquery . ' )';
+		}
+
+		return $returnValue;
+	}
 }
 
 if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/mm_forum/includes/class.tx_mmforum_tools.php']) {

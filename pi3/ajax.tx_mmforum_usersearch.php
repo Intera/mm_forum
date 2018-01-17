@@ -121,10 +121,12 @@ class tx_mmforum_userSearch {
 
 		$search = $GLOBALS['TYPO3_DB']->quoteStr($sword, 'fe_users');
 
+		$pidquery = tx_mmforum_tools::getUserGroupPIDQuery($_SESSION['tx_mmforum_pi3'], 'fe_users');
+
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
 				$this->field, 'fe_users',
                 'disable=0 AND deleted=0 AND ' . $this->field . ' LIKE \'' . $search . '%\'' .
-					' AND pid=' . $this->pid . ' AND FIND_IN_SET(' . $this->group_id . ', usergroup)',
+					$pidquery . ' AND FIND_IN_SET(' . $this->group_id . ', usergroup)',
                 '',						// group by
 				$this->field . ' ASC',	// order by
 				'8'						// limit

@@ -5899,7 +5899,7 @@ class tx_mmforum_pi1 extends tx_mmforum_base {
 	 *                       records.
 	 */
 	function getUserPidQuery($table = 'fe_users') {
-		return ' AND ' . $table . '.pid = ' . intval($this->conf['userPID']) . ' ';
+		return tx_mmforum_tools::getUserGroupPIDQuery($this->conf, $table);
 	}
 
     /**

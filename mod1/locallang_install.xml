@@ -40,8 +40,8 @@
 			<!-- GENERAL OPTIONS -->
 			<label index="install.field.storagePID.title">Data storage page</label>
 			<label index="install.field.storagePID.desc">This value defines the page on which all mm_forum data are stored.</label>
-			<label index="install.field.userPID.title">User data storage page</label>
-			<label index="install.field.userPID.desc">This value defines the page on which all user data, i.e. users and user groups, are stored.</label>
+			<label index="install.field.userPID.title">User data storage pages</label>
+			<label index="install.field.userPID.desc">This value defines the pages on which all user data, i.e. users and user groups, are stored. New users will be stored in the first page in the list.</label>
 			<label index="install.field.userGroup.title">Default user group</label>
 			<label index="install.field.userGroup.desc">This is the default mm_forum user group. All newly registered users will be added to this group. Only members of this group will be regarded as mm_forum users.</label>
 			<label index="install.field.moderatorGroup.title">Moderator group</label>
@@ -212,6 +212,10 @@
 			<label index="install.sampleData.desc">Check this input field if you want some sample data to be inserted into your new forum.</label>
 			<label index="install.firstAdmin.title">First admin user</label>
 			<label index="install.firstAdmin.desc">Here you can select a user that will automatically be made an administrator user for the forum. Can be left empty.</label>
+
+			<!-- ADDED IN 1.10.0 -->
+			<label index="install.field.userPIDRecursive.title">Search user data storage pages recursively</label>
+			<label index="install.field.userPIDRecursive.desc">If this value is set, the subpages of the defined user data storage pages will also be accessed to the specified level.</label>
 		</languageKey>
         <!-- GERMAN LANGUAGE DATA -->
 		<languageKey index="de" type="array">
@@ -248,8 +252,8 @@
 			<!-- GENERAL OPTIONS -->
 			<label index="install.field.storagePID.title">Datenspeicherseite</label>
 			<label index="install.field.storagePID.desc">Dieser Wert beschreibt die Seite, auf der die mm_forum-Daten gespeichert werden.</label>
-			<label index="install.field.userPID.title">Benutzerspeicherseite</label>
-			<label index="install.field.userPID.desc">Dieser Wert beschreibt die Seite, auf der alle Benutzerdaten, d.h. Benutzer und Benutzergruppen, gespeichert werden.</label>
+			<label index="install.field.userPID.title">Benutzerspeicherseiten</label>
+			<label index="install.field.userPID.desc">Dieser Wert beschreibt die Seiten, auf denen alle Benutzerdaten, d.h. Benutzer und Benutzergruppen, gespeichert werden. Neue Benutzer werden in der ersten Seite in der Liste gespeichert.</label>
 			<label index="install.field.userGroup.title">Standardbenutzergruppe</label>
 			<label index="install.field.userGroup.desc">Die Standard-mm_forum-Benutzergruppe. Alle neu registrierten Benutzer werden dieser Gruppe hinzugefügt. Nur Mitglieder dieser Gruppe werden als mm_forum-Benutzer erachtet.</label>
 			<label index="install.field.moderatorGroup.title">Moderatorengruppe</label>
@@ -412,6 +416,10 @@
 			<label index="install.field.requiredFields.desc">Die Felder, die bei der Registrierung zwingend ausgefüllt werden müssen. &lt;br&gt;Der Benutzername und das Passwort sind immer Pflichtfelder.</label>
 			<label index="install.field.emailConfirm.title">Anmeldung bestätigen</label>
 			<label index="install.field.emailConfirm.desc">Gibt an, ob Anmeldungen über einen per E-Mail verschickten Aktivierungslink bestätigt werden müssen.</label>
+
+			<!-- ADDED IN 1.10.0 -->
+			<label index="install.field.userPIDRecursive.title">Benutzerspeicherseiten rekursiv durchsuchen</label>
+			<label index="install.field.userPIDRecursive.desc">Wenn dieser Wert gesetzt ist, dann werden die Unterseiten der angegeben Benutzerspeicherseiten bis zur ausgewählten Tiefe durchsucht.</label>
 		</languageKey>
 
         <!-- FINNISH LANGUAGE DATA -->

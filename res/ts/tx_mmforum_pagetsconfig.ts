@@ -79,6 +79,14 @@ mod.web_txmmforumM1 {
 						userPID {
 							type = group
 							type.table = pages
+							type.size = 3
+							type.maxitems = 22
+						}
+
+						userPIDRecursive = MMFORUM_CONF_ITEM
+						userPIDRecursive {
+							type = select
+							type.handler = getRecusiveOptions
 						}
 
 						userGroup = MMFORUM_CONF_ITEM

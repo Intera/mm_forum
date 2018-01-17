@@ -559,9 +559,7 @@ class tx_mmforum_pi6 extends tx_mmforum_base {
 	 * @version 2007-04-16
 	 */
 	function getUserPidQuery($table="fe_users") {
-		if($this->conf['userPID']==-1) return "";
-		if($this->conf['userPID']=="") return "";
-		else return " AND $table.pid='".$this->conf['userPID']."'";
+		return tx_mmforum_tools::getUserGroupPIDQuery($this->conf, $table);
 	}
 }
 

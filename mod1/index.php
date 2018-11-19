@@ -74,7 +74,6 @@
 unset($MCONF);
 require_once('conf.php');
 require_once($BACK_PATH.'init.php');
-require_once($BACK_PATH.'template.php');
 
 define("BACK_PATH",$BACK_PATH);
 

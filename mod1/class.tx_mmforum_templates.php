@@ -434,7 +434,7 @@ function catchTab(item,e){
      * @return  void
      */
     function generateAltTemplatePath() {
-        $segments = explode('/',$this->altTemplatePath);
+        $segments = explode('/', \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName($this->altTemplatePath));
 
         $path = '/';
 

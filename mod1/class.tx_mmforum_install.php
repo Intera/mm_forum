@@ -65,6 +65,7 @@
  *
  */
 
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * This class handles the backend mm_forum configuration. If offers
@@ -705,7 +706,7 @@ class tx_mmforum_install {
 		}
 
 		if ($value) {
-			$values = t3lib_div::trimExplode(',', t3lib_div::rm_endcomma($value), 1);
+			$values = GeneralUtility::trimExplode(',', $value, 1);
 			foreach ($values as &$val) {
 				$val = $table . '_' . $val;
 			}
